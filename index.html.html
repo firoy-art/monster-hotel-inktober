@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hotel of Monsters — Inktober</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #17131f;
+      color: #f5f1ea;
+      min-height: 100vh;
+    }
+
+    .page {
+      width: min(1180px, 94vw);
+      margin: 0 auto;
+      padding: 36px 0 60px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 64px);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      opacity: 0.7;
+      font-size: 15px;
+    }
+
+    .hotel {
+      position: relative;
+      background: #33283f;
+      border: 8px solid #0f0c14;
+      border-radius: 16px 16px 4px 4px;
+      padding: 26px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.35);
+    }
+
+    .roof {
+      height: 70px;
+      margin: -58px 60px 18px;
+      background: #241b2f;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      border-bottom: 6px solid #0f0c14;
+    }
+
+    .hotel-sign {
+      width: fit-content;
+      margin: 0 auto 24px;
+      padding: 10px 22px;
+      border: 3px solid #0f0c14;
+      background: #5c496f;
+      border-radius: 8px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .floors {
+      display: grid;
+      gap: 18px;
+    }
+
+    .floor {
+      background: #493a58;
+      border: 4px solid #0f0c14;
+      padding: 14px;
+      border-radius: 8px;
+    }
+
+    .floor-label {
+      font-size: 12px;
+      opacity: .6;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .rooms {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .door {
+      position: relative;
+      aspect-ratio: 0.72 / 1;
+      border: 4px solid #16111d;
+      border-radius: 7px 7px 2px 2px;
+      background: #8e674b;
+      color: #fff8e9;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
+    }
+
+    .door::before {
+      content: "";
+      position: absolute;
+      inset: 10% 15%;
+      border: 2px solid rgba(20, 12, 8, .35);
+      border-radius: 4px;
+    }
+
+    .door::after {
+      content: "";
+      position: absolute;
+      right: 12%;
+      top: 52%;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #e9c56f;
+      box-shadow: 0 0 0 2px rgba(0,0,0,.25);
+    }
+
+    .door:hover {
+      transform: translateY(-4px);
+      filter: brightness(1.16);
+      box-shadow: 0 8px 16px rgba(0,0,0,.3);
+    }
+
+    .door:focus-visible {
+      outline: 3px solid #f4d78c;
+      outline-offset: 3px;
+    }
+
+    .door span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .rooms.last-floor {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(8, 5, 12, .78);
+      padding: 24px;
+      z-index: 100;
+    }
+
+    .modal.open {
+      display: grid;
+    }
+
+    .card {
+      position: relative;
+      width: min(520px, 92vw);
+      background: #f1e8d8;
+      color: #261c2d;
+      border: 5px solid #261c2d;
+      border-radius: 14px;
+      padding: 34px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.45);
+    }
+
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      border: 0;
+      background: transparent;
+      font-size: 28px;
+      cursor: pointer;
+      color: #261c2d;
+    }
+
+    .day {
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: .55;
+      margin-bottom: 8px;
+    }
+
+    .theme {
+      margin: 0 0 16px;
+      font-size: 34px;
+    }
+
+    .description {
+      line-height: 1.6;
+      margin: 0;
+      font-size: 16px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      opacity: .5;
+      font-size: 13px;
+    }
+
+    @media (max-width: 760px) {
+      .rooms,
+      .rooms.last-floor {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .roof {
+        margin-left: 24px;
+        margin-right: 24px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .hotel {
+        padding: 14px;
+      }
+
+      .rooms,
+      .rooms.last-floor {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .theme {
+        font-size: 27px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>Hotel of Monsters</h1>
+      <div class="subtitle">Inktober Challenge · выбери любую комнату</div>
+    </header>
+
+    <section class="hotel">
+      <div class="roof"></div>
+      <div class="hotel-sign">MONSTER HOTEL</div>
+
+      <div class="floors">
+        <div class="floor">
+          <div class="floor-label">4 этаж</div>
+          <div class="rooms" id="floor4"></div>
+        </div>
+
+        <div class="floor">
+          <div class="floor-label">3 этаж</div>
+          <div class="rooms" id="floor3"></div>
+        </div>
+
+        <div class="floor">
+          <div class="floor-label">2 этаж</div>
+          <div class="rooms" id="floor2"></div>
+        </div>
+
+        <div class="floor">
+          <div class="floor-label">1 этаж</div>
+          <div class="rooms last-floor" id="floor1"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>Нажми на дверь, чтобы открыть тему комнаты</footer>
+  </main>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <article class="card">
+      <button class="close" id="closeBtn" aria-label="Закрыть">×</button>
+      <div class="day" id="modalDay">DAY 01</div>
+      <h2 class="theme" id="modalTheme">Тема</h2>
+      <p class="description" id="modalDescription">Описание темы.</p>
+    </article>
+  </div>
+
+  <script>
+    const themes = Array.from({ length: 31 }, (_, i) => ({
+      day: i + 1,
+      title: `Тема комнаты ${i + 1}`,
+      description: `Здесь будет короткое описание темы для дня ${i + 1}. Позже ты сможешь заменить этот текст на своё настоящее описание персонажа или задания.`
+    }));
+
+    const floorMap = {
+      floor1: themes.slice(0, 7),
+      floor2: themes.slice(7, 15),
+      floor3: themes.slice(15, 23),
+      floor4: themes.slice(23, 31)
+    };
+
+    function createDoor(theme) {
+      const button = document.createElement("button");
+      button.className = "door";
+      button.innerHTML = `<span>${String(theme.day).padStart(2, "0")}</span>`;
+      button.setAttribute("aria-label", `Открыть комнату ${theme.day}`);
+      button.addEventListener("click", () => openModal(theme));
+      return button;
+    }
+
+    Object.entries(floorMap).forEach(([floorId, roomThemes]) => {
+      const floor = document.getElementById(floorId);
+      roomThemes.forEach(theme => floor.appendChild(createDoor(theme)));
+    });
+
+    const modal = document.getElementById("modal");
+    const modalDay = document.getElementById("modalDay");
+    const modalTheme = document.getElementById("modalTheme");
+    const modalDescription = document.getElementById("modalDescription");
+    const closeBtn = document.getElementById("closeBtn");
+
+    function openModal(theme) {
+      modalDay.textContent = `DAY ${String(theme.day).padStart(2, "0")}`;
+      modalTheme.textContent = theme.title;
+      modalDescription.textContent = theme.description;
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal() {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    closeBtn.addEventListener("click", closeModal);
+
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) closeModal();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeModal();
+    });
+  </script>
+</body>
+</html>
